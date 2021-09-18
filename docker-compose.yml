@@ -5,6 +5,7 @@ services:
     volumes:
       - "db:/var/lib/postgresql/data:cached"
       - "bundle:/usr/local/bundle:cached"
+      - redis-data:/data
   db:
     image: postgres
     environment:
@@ -13,7 +14,16 @@ services:
     volumes_from:
       - "shared"
     ports:
-      - "5432:5432"
+      - "5432:5432"  
+  redis:
+    image: redis:alpine
+    networks:
+      - default
+    ports:
+      - '6379:6379'
+    volumes_from:
+      - shared
+
   rails: &app_base
     build:
       context: .
@@ -28,9 +38,8 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - db    
-    environment:
-      - "WEBPACKER_DEV_SERVER_HOST:webpacker"
+      - db      
+      - redis
     tty: true
     stdin_open: true
   solargraph:
@@ -45,7 +54,7 @@ services:
     environment:
       - RAILS_ENV=development
       - NODE_ENV=development
-      - WEBPACKER_DEV_SERVER_HOST:0.0.0.0
+      - "WEBPACKER_DEV_SERVER_HOST:webpacker"
     command: ./bin/webpack-dev-server
     ports:
       - "3035:3035"
@@ -56,4 +65,6 @@ volumes:
   db:
     driver: local
   bundle:
+    driver: local  
+  redis-data:
     driver: local
