@@ -38,8 +38,6 @@ services:
       - shared
     environment:
       - WEBPACKER_DEV_SERVER_HOST=webpacker
-      - RAILS_ENV=development
-      - NODE_ENV=development
     ports:
       - 3000:3000
     depends_on:
@@ -58,6 +56,8 @@ services:
     <<: *app_base  
     environment:
       - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+      - RAILS_ENV=development
+      - NODE_ENV=development
     command: ./bin/webpack-dev-server
     ports:
       - 3035:3035
