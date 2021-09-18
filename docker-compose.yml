@@ -1,0 +1,73 @@
+version: "3.9"
+services:
+  shared:
+    image: "busybox"
+    volumes:
+      - "db:/var/lib/postgresql/data:cached"
+      - "bundle:/usr/local/bundle:cached"
+  db:
+    image: postgres
+    environment:
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=password"
+    volumes_from:
+      - "shared"
+    ports:
+      - "5432:5432"
+  rails: &app_base
+    build:
+      context: .
+      dockerfile: "Dockerfile"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+    env_file:
+      - "./.env"
+    volumes:
+      - .:/app:cached
+    volumes_from:
+      - "shared"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db    
+    environment:
+      - "WEBPACKER_DEV_SERVER_HOST:webpacker"
+    tty: true
+    stdin_open: true
+  spring:
+    <<: *app_base
+    ports: []
+    command: ["bundle", "exec", "spring", "server"]
+    tty: false
+    stdin_open: false
+    environment:
+      - SPRING_SOCKET:/tmp/spring/spring.sock    
+    volumes:
+      - .:/tmp/spring:cached
+  solargraph:
+    <<: *app_base
+    build:
+      context: .
+      args:
+        - RUBY_VERSION=$RUBY_VERSION
+    ports:
+      - $SOLARGRAPH_PORT:7658
+    command: ["solargraph", "socket", "--host", "0.0.0.0", "--port", "7658"]
+    restart: always
+  webpacker:
+    <<: *app_base
+    environment:
+      - RAILS_ENV=development
+      - NODE_ENV=development
+      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
+    command: ./bin/webpack-dev-server
+    volumes:
+      - .:/webpacker-example-app:cached
+    ports:
+      - "3035:3035"
+    tty: false
+    stdin_open: false
+volumes:
+  db:
+    driver: local
+  bundle:
+    driver: local
