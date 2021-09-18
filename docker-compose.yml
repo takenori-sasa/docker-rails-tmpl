@@ -33,16 +33,6 @@ services:
       - "WEBPACKER_DEV_SERVER_HOST:webpacker"
     tty: true
     stdin_open: true
-  spring:
-    <<: *app_base
-    ports: []
-    command: ["bundle", "exec", "spring", "server"]
-    tty: false
-    stdin_open: false
-    environment:
-      - SPRING_SOCKET:/tmp/spring/spring.sock    
-    volumes:
-      - .:/tmp/spring:cached
   solargraph:
     <<: *app_base  
     ports:
