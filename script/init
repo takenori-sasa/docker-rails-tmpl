@@ -9,3 +9,4 @@ docker-compose run --rm rails bundle exec rails new . --force --database=postgre
 cp -f template/database.yml config/database.yml
 cp -f template/package.json ./package.json
 sed -i ".bak" -e "s/host: localhost/host: webpack/g" config/webpacker.yml
+docker-compose run --rm rails bundle exec spring binstub --all
