@@ -29,8 +29,6 @@ services:
       - "3000:3000"
     depends_on:
       - db    
-    environment:
-      - "WEBPACKER_DEV_SERVER_HOST:webpacker"
     tty: true
     stdin_open: true
   solargraph:
@@ -44,10 +42,8 @@ services:
     environment:
       - RAILS_ENV=development
       - NODE_ENV=development
-      - WEBPACKER_DEV_SERVER_HOST=0.0.0.0
-    command: ./bin/webpack-dev-server
-    volumes:
-      - .:/webpacker-example-app:cached
+      - "WEBPACKER_DEV_SERVER_HOST:webpacker"
+    command: "bin/webpack-dev-server" 
     ports:
       - "3035:3035"
     tty: false
