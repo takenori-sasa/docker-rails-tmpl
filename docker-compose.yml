@@ -45,13 +45,8 @@ services:
       - .:/tmp/spring:cached
   solargraph:
     <<: *app_base  
-    build:
-      context: .  
-      dockerfile: "Dockerfile.dev"
-      args:
-        - RUBY_VERSION=$RUBY_VERSION
     ports:
-      - $SOLARGRAPH_PORT:7658
+      - 7658:7658
     command: ["solargraph", "socket", "--host", "0.0.0.0", "--port", "7658"]
     restart: always
   webpacker:
