@@ -21,7 +21,7 @@ services:
     networks:
       - default
     ports:
-      - 6379:6379
+      - $REDIS_PORT:6379
     volumes_from:
       - shared
 
@@ -37,7 +37,9 @@ services:
     volumes_from:
       - shared
     environment:
-      - WEBPACKER_DEV_SERVER_HOST:webpacker
+      - WEBPACKER_DEV_SERVER_HOST=webpacker
+      - RAILS_ENV=development
+      - NODE_ENV=development
     ports:
       - 3000:3000
     depends_on:
@@ -48,15 +50,12 @@ services:
   solargraph:
     <<: *app_base  
     ports:
-      - 7658:7658
+      - $SOLARGRAPH_PORT:7658
     depends_on: []
-    command: ["solargraph", "socket", "--host", "0.0.0.0", "--port", "7658"]
+    command: ["solargraph", "socket", "--host", "0.0.0.0", "--port", "$SOLARGRAPH_PORT"]
     restart: always
   webpacker:
     <<: *app_base  
-    environment:
-      - RAILS_ENV=development
-      - NODE_ENV=development
     command: ./bin/webpack-dev-server
     ports:
       - 3035:3035

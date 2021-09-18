@@ -17,7 +17,7 @@ COPY . /app
 RUN bundle config build.nokogiri --use-system-libraries
 # PORT設定
 EXPOSE 3000
-EXPOSE 7658
+EXPOSE $SOLARGRAPH_PORT
 
 # Add a script to be executed every time the container starts.
 COPY entrypoint.sh /usr/bin/
