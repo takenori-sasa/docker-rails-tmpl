@@ -46,7 +46,8 @@ services:
   solargraph:
     <<: *app_base  
     build:
-      context: .
+      context: .  
+      dockerfile: "Dockerfile.dev"
       args:
         - RUBY_VERSION=$RUBY_VERSION
     ports:
@@ -67,7 +68,7 @@ services:
     tty: false
     stdin_open: false
     depends_on:
-      rails
+      - rails
 volumes:
   db:
     driver: local
