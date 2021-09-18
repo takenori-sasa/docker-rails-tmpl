@@ -9,11 +9,12 @@ RUN apt-get update -qq && \
     libfontconfig1 && \
     rm -rf /var/lib/apt/lists/*
 # nodeとyarnをインストール
-RUN curl -sL https://deb.nodesource.com/setup_8.x | bash \
- && apt-get update && apt-get install -y nodejs && rm -rf /var/lib/apt/lists/* \
- && curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - \
- && echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list \
- && apt-get update && apt-get install -y yarn && rm -rf /var/lib/apt/lists/*
+RUN wget --quiet -O - /tmp/pubkey.gpg https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+    echo 'deb http://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list && \
+set -x && apt-get update -y -qq && \
+apt-get install -yq nodejs yarn && \
+curl -sL https://deb.nodesource.com/setup_7.x | bash - && \
+apt-get install nodejs
 
 RUN mkdir /app
 WORKDIR /app
@@ -29,4 +30,4 @@ RUN chmod +x /usr/bin/entrypoint.sh
 ENTRYPOINT ["entrypoint.sh"]
 # Start the main process.
 CMD ["rails", "server", "-b", "0.0.0.0"]
-
+# vim set:ft=dockerfile
