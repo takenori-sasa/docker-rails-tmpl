@@ -3,42 +3,43 @@ services:
   shared:
     image: "busybox"
     volumes:
-      - "db:/var/lib/postgresql/data:cached"
-      - "bundle:/usr/local/bundle:cached"
+      - db:/var/lib/postgresql/data:cached
+      - bundle:/usr/local/bundle:cached
       - redis-data:/data
+      - /app/node_modules:cached
   db:
     image: postgres
     environment:
-      - "POSTGRES_USER=postgres"
-      - "POSTGRES_PASSWORD=password"
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
     volumes_from:
-      - "shared"
+      - shared
     ports:
-      - "5432:5432"  
+      - 5432:5432  
   redis:
     image: redis:alpine
     networks:
       - default
     ports:
-      - '6379:6379'
+      - 6379:6379
     volumes_from:
       - shared
 
   rails: &app_base
     build:
       context: .
-      dockerfile: "Dockerfile.dev"
+      dockerfile: Dockerfile.dev
     command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
     env_file:
       - ./.env.dev
     volumes:
       - .:/app:cached
     volumes_from:
-      - "shared"
+      - shared
     environment:
-      - "WEBPACKER_DEV_SERVER_HOST:webpacker"
+      - WEBPACKER_DEV_SERVER_HOST:webpacker
     ports:
-      - "3000:3000"
+      - 3000:3000
     depends_on:
       - db      
       - redis
@@ -58,7 +59,7 @@ services:
       - NODE_ENV=development
     command: ./bin/webpack-dev-server
     ports:
-      - "3035:3035"
+      - 3035:3035
     tty: false
     stdin_open: false
     depends_on: []
@@ -68,4 +69,4 @@ volumes:
   bundle:
     driver: local  
   redis-data:
-    driver: local
+    driver: local  
