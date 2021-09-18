@@ -66,6 +66,8 @@ services:
       - "3035:3035"
     tty: false
     stdin_open: false
+    depends_on:
+      rails
 volumes:
   db:
     driver: local
